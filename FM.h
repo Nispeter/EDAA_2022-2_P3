@@ -1,9 +1,9 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <math.h>
 #include <vector>
 
@@ -35,16 +35,13 @@ int cmpfunc(const void* x, const void* y)
 Funcion que recive el texto y lo rota  un espacio a la vez en cada iteracion.
 Luego se ordena segun el valor ascii de sus caracteres y se guardan las posiciones respecto 
 al texto original
-
 texto: ACTA$
-
 rotaciones:
 [0] ACTA$
 [1] CTA$A
 [2] TA$AC
 [3] A$ACT
 [4] $ACTA
-
 Orden:
 [4] $ACTA
 [3] A$ACT
@@ -193,7 +190,35 @@ int countMatch(string &pat) {
 
 }
 
-void locateMatch(string &pat){}
+vector<int> locateMatch(string &pat){
+    vector<int> foundAt;
+    int i = pat.size()-1;			//tamaño del patron
+    char c = pat[i];				//caracter actual
+    int sp = C[c]-1;				//upper bound
+    int ep = len_text-1;			//lower bound
+    //primera iteracion se verifica la existencia de C[c]
+    map<char,int>::iterator itr = C.find(c);
+    itr++;
+    ep = itr->second-1;
+    i--;
+    if(Occ[c][ep] > len_text or Occ[c][ep] < 0 or ep < 0 or ep > len_text)
+        ep = len_text-1;
+
+    while ((sp < ep) and (i >= 0) ) 
+    {
+        if(C[c]+Occ[c][ep] > len_text or C[c]+Occ[c][ep] < 0)
+            break;
+        c = pat[i];
+        sp = C[c]+Occ[c][sp]-1;
+        ep = C[c]+Occ[c][ep]-1;
+        i--;
+    }
+    for (int i = sp; i < ep; i++)
+    {
+        foundAt.push_back(suffix_arr[i]);
+    }
+    return foundAt;     
+}
 
 void FM(string &text)
 {
