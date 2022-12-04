@@ -6,9 +6,12 @@
 #include <vector>
 #include <math.h>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
+int lastSp;
+int lastEp;
 int* suffix_arr;
 char* bwt_arr;
 char* input_text;
@@ -185,55 +188,21 @@ int countMatch(string &pat) {
         ep = C[c]+Occ[c][ep]-1;
         i--;
     }
+    lastSp = sp;
+    lastEp = ep;
     return abs(ep - sp);
     
 
 }
 
 vector<int> locateMatch(string &pat){
-    vector<int> foundAt;
-    int i = pat.size()-1;			//tamaño del patron
-    char c = pat[i];				//caracter actual
-    int sp = C[c]-1;				//upper bound
-    int ep = len_text-1;			//lower bound
-    //primera iteracion se verifica la existencia de C[c]
-    map<char,int>::iterator itr = C.find(c);
-    itr++;
-    ep = itr->second-1;
-    i--;
-    if(Occ[c][ep] > len_text or Occ[c][ep] < 0 or ep < 0 or ep > len_text)
-        ep = len_text-1;
-
-    while ((sp < ep) and (i >= 0) ) 
-    {
-        if(C[c]+Occ[c][ep] > len_text or C[c]+Occ[c][ep] < 0)
-            break;
-        c = pat[i];
-        sp = C[c]+Occ[c][sp]-1;
-        ep = C[c]+Occ[c][ep]-1;
-        i--;
-    }
-    for (int i = sp; i < ep; i++)
+    countMatch(pat);
+    int sp = lastSp;
+    int ep = lastEp;
+    vector<int>foundAt;
+    for (int i = sp+1; i <= ep; i++)
     {
         foundAt.push_back(suffix_arr[i]);
     }
     return foundAt;     
-}
-
-void FM(string &text)
-{
-	if(text[text.size()-1]!='$')//adaptacion al parseo original de la experimentacion 
-		text.append("$");
-	int size = text.size();
-	input_text = (char*)malloc((size+1) * sizeof(char));
-	strcpy(input_text, text.c_str());
-	len_text = strlen(input_text);
-	suffix_arr = computeSuffixArray(input_text, len_text);//construccion del SA
-	bwt_arr = findLastChar(input_text, suffix_arr, len_text);//construccion del BWT
-	buildArrays();//Construccion de C y Occ
-}
-
-int count(string &pat){
-	int temp = countMatch(pat);
-	return temp;
 }
