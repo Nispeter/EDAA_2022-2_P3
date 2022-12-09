@@ -210,7 +210,7 @@ vector<int> locateMatch(string &pat){
 }
 
 //fso representa el vector de tamaños de cada file y estan en orden de concatenacion
-void findFileMatch(vector<int> &fso, string &pat){
+void doc_locate(vector<int> &fso, string &pat){
     vector<int> lm = locateMatch(pat);
     long int textCount = 0;
     long int sizeCount = 0;

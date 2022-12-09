@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
     textSize.push_back(a.size());
     textSize.push_back(c.size());
     textSize.push_back(d.size());
-    findFileMatch(textSize,b);          //recive textSize y el patron, no se puede usar luego de un countMatch por que este lo llama internamente.
+    doc_locate(textSize,b);          //recive textSize y el patron, no se puede usar luego de un countMatch por que este lo llama internamente.
 
     return 0;
 }
