@@ -195,6 +195,7 @@ int countMatch(string &pat) {
 
 }
 
+//Encuentra la posicion del patron en el texto
 vector<int> locateMatch(string &pat){
     countMatch(pat);
     int sp = lastSp;
@@ -204,5 +205,38 @@ vector<int> locateMatch(string &pat){
     {
         foundAt.push_back(suffix_arr[i]);
     }
+    sort(foundAt.begin(),foundAt.end());
     return foundAt;     
+}
+
+//fso representa el vector de tamaños de cada file y estan en orden de concatenacion
+void findFileMatch(vector<int> &fso, string &pat){
+    vector<int> lm = locateMatch(pat);
+    long int textCount = 0;
+    long int sizeCount = 0;
+    int ocurCount = 0;
+    for (int i = 0; i <= lm.size(); i++)
+    {
+        if(i != lm.size() and lm[i] < sizeCount + fso[textCount] )
+            ocurCount++;
+        else {
+            cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+            ocurCount = 1;
+            sizeCount += fso[textCount]+1;
+            textCount++;
+        }
+    }       
+}
+
+void FM(string &text)
+{
+	if(text[text.size()-1]!='$')//adaptacion al parseo original de la experimentacion 
+		text.append("$");
+	int size = text.size();
+	input_text = (char*)malloc((size+1) * sizeof(char));
+	strcpy(input_text, text.c_str());
+	len_text = strlen(input_text);
+	suffix_arr = computeSuffixArray(input_text, len_text);//construccion del SA
+	bwt_arr = findLastChar(input_text, suffix_arr, len_text);//construccion del BWT
+	buildArrays();//Construccion de C y Occ
 }
