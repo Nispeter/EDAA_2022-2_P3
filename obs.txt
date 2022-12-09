@@ -1,0 +1,4 @@
+Hipotesis: 
+    fm index busqueda constante vs suffix array incremento importante en tiempo de busqueda
+    constructoers similares 
+    fm index mas rapido en busqueda para patrones que no se encuentran en el texto

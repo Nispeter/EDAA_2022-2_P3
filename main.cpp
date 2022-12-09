@@ -1,10 +1,32 @@
 #include <bits/stdc++.h>
 #include "FM.h"
+#include "parse.h"
 
 using namespace std;
 
 int main(int argc, char const *argv[])
 {
+
+    // int total_lines = 10'000;
+    // int random_lines = 10;
+    // int pattern_len = 5;
+    // std::string line;
+    // std::ifstream file("test.txt");
+    // int line_number = 0;
+    // string text = "";
+    // while (std::getline(file, line)) {
+    //     text.append(" "+line);
+    //     if(line_number > total_lines)
+    //         break;
+    //     ++line_number;
+    // }
+    // text += "$";
+    // set <string>  stringSet = getStaticPattern(total_lines,random_lines);
+    // int valSet = rand()%stringSet.size();
+    // set<string>::iterator iter = stringSet.begin();
+    // advance(iter,valSet);
+    // string pattern = *iter;
+
     string a = "alabaalaalabarda";
     string c = "alalarabanalara";
     string d = "alabamala";

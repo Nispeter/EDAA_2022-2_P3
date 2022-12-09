@@ -191,8 +191,6 @@ int countMatch(string &pat) {
     lastSp = sp;
     lastEp = ep;
     return abs(ep - sp);
-    
-
 }
 
 //Encuentra la posicion del patron en el texto
