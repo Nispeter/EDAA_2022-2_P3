@@ -135,6 +135,7 @@ int main(int argc, char** argv) {
 
   FMIndex.doc_locate(patron, posList);
   doc_locate(filename, patron, sa);
-  
+  // Recordar limpiar seq, si se hacen 30 reps.
+
   return 0;
 }
