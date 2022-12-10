@@ -142,35 +142,104 @@ double varianza(const vector<double> &v, double prom) {
 
 int main(int argc, char** argv) { 
   string original_filename(argv[1]);
-  string patron(argv[2]);
+  string patron_size(argv[2]);
   string nDoc(argv[3]);
   string lenDoc(argv[4]);
+  string logfile(argv[5]);
+  string reps(argv[6]);
+
+  // ./a.out nombreArchivo tamaño_patron nDocs largoDocs log repeticiones
+
+  ifstream t(original_filename);
+  stringstream buffer;
+  buffer << t.rdbuf();
+
+  random_device rnd_device;
+  mt19937 mersenne_engine {rnd_device()};
+  uniform_int_distribution<long unsigned int> dist {0, (buffer.str()).size() - stoi(patron_size) - 1};
+  auto gen = [&dist, &mersenne_engine](){return dist(mersenne_engine);};
+
+  vector<int> vec(1);
+
+  string w;
+
+  auto start = chrono::high_resolution_clock::now();
+  vector<double> tBusSA, tBusFM, tConsSA, tConsFM; 
+  auto end = chrono::high_resolution_clock::now();
+  chrono::duration<double> diff = end - start;
 
   vector<int> posList = parser(original_filename, stoi(nDoc), stoi(lenDoc));
 
   string filename = original_filename + ".parsed";
   
-  FMIndexWrapper FMIndex(filename);
-  int_vector<> sa = saCalculate(filename, patron);
+  vector<int> docIndexFM;
+  vector<int> docIndexSA; 
+
+  for (int i = 0; i < stoi(reps); ++i) {
+    generate(vec.begin(), vec.end(), gen);
+    w = (buffer.str()).substr(vec[0], stoi(patron_size));
+
+    start = chrono::high_resolution_clock::now();
+    int_vector<> sa = saCalculate(filename, w);
+    end = chrono::high_resolution_clock::now();
+    diff = end - start;
+    tConsSA.push_back(diff.count());
+
+    start = chrono::high_resolution_clock::now();
+    docIndexSA = doc_locate(filename, w, posList, sa);
+    end = chrono::high_resolution_clock::now();
+    int_vector<> aux;
+    seq = aux;
+    diff = end - start;
+    tBusSA.push_back(diff.count());
+
+    start = chrono::high_resolution_clock::now();
+    FMIndexWrapper FMIndex(filename);
+    end = chrono::high_resolution_clock::now();
+    diff = end - start;
+    tConsFM.push_back(diff.count());
+
+    start = chrono::high_resolution_clock::now();
+    docIndexFM = FMIndex.doc_locate(w, posList);
+    end = chrono::high_resolution_clock::now();
+    diff = end - start;
+    tBusFM.push_back(diff.count());  
+  }
+
+  double prom_tBusSA = promedio(tBusSA);
+  double prom_tBusFM = promedio(tBusFM);
+  double prom_tConsSA = promedio(tConsSA);
+  double prom_tConsFM = promedio(tConsFM);
+
+  double var_tBusSA = varianza(tBusSA, prom_tBusSA);
+  double var_tBusFM = varianza(tBusFM, prom_tBusFM);
+  double var_tConsSA = varianza(tConsSA, prom_tConsSA);
+  double var_tConsFM = varianza(tConsFM, prom_tConsFM);
+
+
+  ofstream log(logfile, ios_base::app | ios_base::out);
+
+  cout << "Imprimiendo... " << size << endl;
+
+  log << stoi(nDoc) * stoi(lenDoc) << "," << prom_tBusSA << "," << prom_tBusFM << "," << var_tBusSA << "," << var_tBusFM << "," << prom_tConsSA << "," << prom_tConsFM << "," << var_tConsSA << "," << var_tConsFM << endl;
+
+  cout << w << endl;
 
   cout << "FM" << endl;
-  vector<int> docIndexFM = FMIndex.doc_locate(patron, posList);
+
   for (int i : docIndexFM) {
     cout << i << " ";
   }
+
   cout << endl;
 
   cout << "SA" << endl;
-  vector<int> docIndexSA = doc_locate(filename, patron, posList, sa);
+
   for (int i : docIndexSA) {
     cout << i << " ";
   }
 
   cout << endl;
-
-  // Recordar limpiar seq, si se hacen 30 reps.
-  int_vector<> aux;
-  seq = aux;
 
   return 0;
 }
