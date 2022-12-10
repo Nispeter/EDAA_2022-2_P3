@@ -124,14 +124,20 @@ double varianza(const vector<double> &v, double prom) {
 
 
 int main(int argc, char** argv) { 
-  string filename = "test";
-  string patron = "test";
-  vector<int> posList = parser(filename, 1, 1);
+  string original_filename(argv[1]);
+  string patron(argv[2]);
+  string nDoc(argv[3]);
+  string lenDoc(argv[4]);
 
+  vector<int> posList = parser(original_filename, stoi(nDoc), stoi(lenDoc));
+
+  string filename = original_filename + ".parsed";
+  
   FMIndexWrapper FMIndex(filename);
   int_vector<> sa = saCalculate(filename, patron);
 
   FMIndex.doc_locate(patron, posList);
+  cout << "test" << endl;
   doc_locate(filename, patron, posList, sa);
   // Recordar limpiar seq, si se hacen 30 reps.
 
