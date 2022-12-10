@@ -49,13 +49,14 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
   int lb = get_bound(l,r,text,pat,sa,1)+1;
   int ub = get_bound(l,r,text,pat,sa,0);
 
-  //cerr<<"lower_bound "<<lb<<endl;
-  //cerr<<"upper_bound "<<ub<<endl;
+  //cerr<<"lower_bound "<<lb<<" "<<text[sa[lb]]<<endl;
+  //cerr<<"upper_bound "<<ub<<" "<<text[sa[ub]]<<endl;
   for(int i = lb;  i < ub; i++){
     pos.push_back(sa[i]);
     //cerr<<sa[i]<<" ";
   }//cerr<<endl;
   sort(pos.begin(),pos.end());
+  //cerr<<"a"<<endl;
   return pos;
 }
 
@@ -83,33 +84,61 @@ int_vector<> saCalculate(string filename, string patron) {
 }
 
 void doc_locate(string filename, string patron, vector<int> posList, int_vector<> sa){
-  char* pat = (char* ) patron.c_str();
-
+  char* pat = (char*) patron.c_str();
+  
   vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
 
-  cout << endl;
+  //long int textCount = 0;
+  //long int sizeCount = 0;
+  if(!pos.size())
+    return ;
 
-  long int textCount = 0;
-  long int sizeCount = 0;
+  // for (int i = 0; i < posList.size(); i++)
+  // {
+  //   cerr<<posList[i]<<endl;
+  // }
+  
+
   int ocurCount = 0;
-  for (int i = 0; i <= pos.size(); i++) {
-    while(pos[i] > (textCount == 0 ? 0: posList[textCount-1])){
-      if (pos[i] > posList[textCount]) break;
-      if (ocurCount != 0)  cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
-      ocurCount = 0;
-      textCount++;
-    }
+  int lowRange = 0;
+  int upRange = posList[0];
+  int posCount = 0;
 
-    cout << "AAAAAAAAAAAAAA " << pos[i] << endl; 
-
-    if(i != pos.size() and pos[i] < posList[textCount] )
-        ocurCount++;
-    else {
-      cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
-      ocurCount = 0;
-      textCount++;
+  // for (int i = 0; i < pos.size(); i++)
+  // {
+  //   cerr<<"pos:"<<pos[i]<<endl;
+  // }
+  
+  
+  for(int i = 0; i < posList.size(); i++){
+    while(pos[posCount] > lowRange and pos[posCount] <= upRange){
+      //cerr<<pos[posCount] <<"<"<<upRange<<endl;
+      posCount++;
+      ocurCount++;
     }
+      if(ocurCount != 0)cout<<":Ocurrencias de patron '"<<pat<<"' en documento "<<i+1<<" = "<<ocurCount<<endl;
+      ocurCount = 0;
+
+    lowRange = upRange;
+    if(i != posList.size()-1)upRange = posList[i+1];
+    else upRange += posList[i];
   }
+  
+
+  // for (int i = 0; i <= pos.size() and pos[i] < posList[posList.size()-1]; i++) {
+  //   while(pos[i]> (textCount == 0 ? posList[0] : posList[textCount-1])){
+  //     if(ocurCount != 1) cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+  //     ocurCount = 1;
+  //     textCount++;
+  //   }
+  //   if(i != pos.size() and pos[i] < posList[textCount] )
+  //       ocurCount++;
+  //   else {
+  //     cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+  //     ocurCount = 1;
+  //     textCount++;
+  //   }
+  // }       
 }
 
 double promedio(const vector<double> &v) {

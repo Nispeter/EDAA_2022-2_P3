@@ -13,18 +13,45 @@ FMIndexWrapper::FMIndexWrapper(string file_name){
 
 
 vector<int> FMIndexWrapper::doc_locate(const string &pattern, vector<int> posList){
-	auto posiciones = sdsl::locate(fm_index, pattern.begin(), pattern.end());
-    sort(posiciones.begin(), posiciones.end());
-    int posNum = 0;
+	auto pos = sdsl::locate(fm_index, pattern.begin(), pattern.end());			//hits
+    sort(pos.begin(), pos.end());
     vector<int> docIndex;
-    for (int i = 0; i < posList.size(); ++i)
-    {
-    	if(posiciones[posNum]<posList[i]){
-    		docIndex.push_back(i+1);
-    		posNum++;
-    		if(posNum==posiciones.size())
-    			break;
-    	}
+
+
+
+
+	if(!pos.size())
+    return docIndex;
+
+  // for (int i = 0; i < posList.size(); i++)
+  // {
+  //   cerr<<posList[i]<<endl;
+  // }
+  
+
+  int ocurCount = 0;
+  int lowRange = 0;
+  int upRange = posList[0];
+  int posCount = 0;
+
+  // for (int i = 0; i < pos.size(); i++)
+  // {
+  //   cerr<<"pos:"<<pos[i]<<endl;
+  // }
+  
+  
+  for(int i = 0; i < posList.size(); i++){
+    while(pos[posCount] > lowRange and pos[posCount] <= upRange){
+      //cerr<<pos[posCount] <<"<"<<upRange<<endl;
+      posCount++;
+      ocurCount++;
     }
+      if(ocurCount != 0)docIndex.push_back(i+1);;
+      ocurCount = 0;
+
+    lowRange = upRange;
+    if(i != posList.size()-1)upRange = posList[i+1];
+    else upRange += posList[i];
+  }
     return docIndex;
 }
