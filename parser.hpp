@@ -16,7 +16,7 @@ vector<int> parser(string file_name, int nDocuments, int lenDoc){
 		Sinput.insert(pos,"$");
 		pos += lenDoc + 1;
 	}
-	ofstream out("T.txt");
+	ofstream out(file_name + ".parsed");
 	out << Sinput;
 	out.close();
 	return posList;
