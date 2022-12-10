@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 
   ofstream log(logfile, ios_base::app | ios_base::out);
 
-  cout << "Imprimiendo... " << size << endl;
+  cout << "Imprimiendo... " << stoi(nDoc) * stoi(lenDoc) << endl;
 
   log << stoi(nDoc) * stoi(lenDoc) << "," << prom_tBusSA << "," << prom_tBusFM << "," << var_tBusSA << "," << var_tBusFM << "," << prom_tConsSA << "," << prom_tConsFM << "," << var_tConsSA << "," << var_tConsFM << endl;
 
