@@ -2,7 +2,7 @@
 //
 // Prerrequisitos: Tener la biblioteca SDSL instalada
 //
-// Compilación: g++ -O3 -o sa sa.cpp -lsdsl -ldivsufsort -ldivsufsort64
+// Compilación: g++ -O3 -o sa sa.cpp -lsdsl -ldivsutamrt -ldivsutamrt64
 #include <sdsl/suffix_arrays.hpp>
 #include <string>
 #include <iostream>
@@ -58,30 +58,9 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
   return pos;
 }
 
-void doc_locate(vector<int> &fso, vector<int> pos, char* pat){
-    long int textCount = 0;
-    long int sizeCount = 0;
-    int ocurCount = 0;
-    for (int i = 0; i <= pos.size(); i++)
-    {
-        if(i != pos.size() and pos[i] < sizeCount + fso[textCount] )
-            ocurCount++;
-        else {
-            cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
-            ocurCount = 1;
-            sizeCount += fso[textCount]+1;
-            textCount++;
-        }
-    }       
-}
-
-int main(int argc, char** argv) {
-  if (argc !=  2) {
-    cout << "Uso: " << argv[0] << " <archivo entrada>" << endl;
-    return 1;
-  }
+void doc_locate(string filename, string patron){
   // Leemos el archivo de entrada y guardamos el contenido en 'seq'
-  string infile(argv[1]);
+  string infile(filename);
   
   int_vector<> seq;
   int32_t n;
@@ -94,32 +73,58 @@ int main(int argc, char** argv) {
     seq[n-1] = 0; // Representa el final de texto. Suele representarse por el
                   // símbolo $ 
   }
-  cout << "Construyendo el Suffix array ..." << endl;
   
   int_vector<> sa(1, 0, bits::hi(n)+1);
   sa.resize(n);
   algorithm::calculate_sa((const unsigned char*)seq.data(), n, sa);
 
-  // char * a = (char*)"nalnalnalnalnalnalnalnallnlanlnalnlanalhsdfg";
-  // int_vector<> sa(1, 0, bits::hi(strlen(a))+1);
-  // sa.resize(strlen(a));
-  //n=sterlen(a);
-  // algorithm::calculate_sa((const unsigned char*)a, strlen(a), sa);
-
-  char* pat = (char*)"number";
-  // cerr<<"a->"<<strlen(a)<<endl;
-  // for (int i = 0; i < strlen(a); i++)
-  // {
-  //   cerr<<"["<<i<<"]"<<sa[i]<<":"<<a[sa[i]]<<" ";
-  // }cerr<<endl;
+  char* pat = (char*) patron.c_str();
   
-  vector<int> pos =  sa_locate((char*)seq.data(), pat, sa);
-  //vector<int> pos =  sa_locate(a, pat, sa);
+  vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
   vector<int> tam;
   tam.push_back(n);
-  doc_locate(tam,pos,pat);
-    
-  cout << "Tamaño del SA " << size_in_mega_bytes(sa) << " MB." << endl;
+
+  long int textCount = 0;
+  long int sizeCount = 0;
+  int ocurCount = 0;
+  for (int i = 0; i <= pos.size(); i++) {
+    	if(i != pos.size() and pos[i] < sizeCount + tam[textCount] )
+            ocurCount++;
+        else {
+            cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+            ocurCount = 1;
+            sizeCount += tam[textCount]+1;
+            textCount++;
+        }
+    }       
+}
+
+double promedio(const vector<double> &v) {
+  double aux = 0;
+
+  for (double i : v) {
+    aux += i;
+  }
+
+  return (aux / (double) v.size()); 
+}
+
+double varianza(const vector<double> &v, double prom) {
+  double var = 0;
+
+  for (double i : v) {
+    var += (i - prom) * (i - prom);
+  }
+
+  return (var / (double) v.size());
+}
+
+
+int main(int argc, char** argv) { 
+  string filename = "test";
+  string patron = "test";
+
+  doc_locate(filename, patron);
   
   return 0;
 }
