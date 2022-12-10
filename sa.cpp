@@ -21,21 +21,22 @@ int get_bound(int l, int r, char *text, char* pat, int_vector<> &sa, int mode){
   int n = strlen(text);
   int m = strlen(pat);
   long mid = (l+r)/2;
-
-  if (l > r )
-    return -1;
-  else if(l == r or mid == 0 or mid == n-1)
+  //cerr<<"l:"<<l<<" mid:"<<mid<<" r:"<<r<<endl;
+  
+  if(l == r or mid == 0 or mid == n-1)
     return mid;
+  else if (l > r )
+    return mid - 1;
   //Modo 1 obtiene el limite inferior 
   if(mode){
-    if(strncmp(text+sa[mid], pat , m) >= 0)
+    if(strncmp(pat, text+sa[mid] , m) <= 0)
       return get_bound(l,mid-1,text,pat,sa,mode);
     else
       return get_bound(mid+1,r,text,pat,sa,mode);
   }
-  //Modo 2 obtiene el limite superior 
+  //Modo 0 obtiene el limite superior 
   else {
-    if(strncmp(text+sa[mid], pat , m) > 0)
+    if(strncmp(pat,text+sa[mid] , m) < 0)
       return get_bound(l,mid-1,text,pat,sa,mode);
     else
       return get_bound(mid+1,r,text,pat,sa,mode);
@@ -52,13 +53,14 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
 
   int l = 0;
   int r = n-m-1;
-  int lb = get_bound(l,r,text,pat,sa,1);
+  int lb = get_bound(l,r,text,pat,sa,1)+1;
   int ub = get_bound(l,r,text,pat,sa,0);
-
+  cerr<<"lb: "<<lb<<" ub:"<<ub<<endl;;
   for(int i = lb;  i < ub; i++){
     pos.push_back(sa[i]);
   }
   sort(pos.begin(),pos.end());
+  cerr<<"size:"<<pos.size()<<endl;
   return pos;
 }
 
@@ -219,7 +221,6 @@ int main(int argc, char** argv) {
 
   ofstream log(logfile, ios_base::app | ios_base::out);
 
-  cout << "Imprimiendo... " << stoi(nDoc) * stoi(lenDoc) << endl;
 
   log << stoi(nDoc) * stoi(lenDoc) << "," << prom_tBusSA << "," << prom_tBusFM << "," << var_tBusSA << "," << var_tBusFM << "," << prom_tConsSA << "," << prom_tConsFM << "," << var_tConsSA << "," << var_tConsFM << endl;
 
