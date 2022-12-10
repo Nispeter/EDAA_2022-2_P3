@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
   vector<int> posList = parser(filename, 1, 1);
 
   FMIndexWrapper FMIndex(filename);
-  int_vector<> sa = saCalculate(string filename, string patron)
+  int_vector<> sa = saCalculate(filename, patron);
 
   FMIndex.doc_locate(patron, posList);
   doc_locate(filename, patron, sa);
