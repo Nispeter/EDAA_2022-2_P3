@@ -93,10 +93,17 @@ void doc_locate(string filename, string patron, vector<int> posList, int_vector<
   long int sizeCount = 0;
   int ocurCount = 0;
   for (int i = 0; i <= pos.size(); i++) {
-    	if(i != pos.size() and pos[i] < posList[textCount] )
+    if (pos[i] > posList[textCount - 1]) {
+      ocurCount = 1;
+      textCount++;
+      i--;
+      continue;
+    } 
+    	if(i != pos.size() and pos[i] < posList[textCount])
             ocurCount++;
         else {
             cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+            cout<< "Doc " << ceil(pos[i]/100000) << endl;
             ocurCount = 1;
             sizeCount += posList[textCount]+1;
             textCount++;
