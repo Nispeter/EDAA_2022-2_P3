@@ -1,12 +1,9 @@
-// Construcción del suffix array y la BWT de un texto
-//
-// Prerrequisitos: Tener la biblioteca SDSL instalada
-//
-// Compilación: g++ -O3 -o sa sa.cpp -lsdsl -ldivsutamrt -ldivsutamrt64
 #include <sdsl/suffix_arrays.hpp>
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include "parser.hpp"
+#include "FM-IndexWrapper.hpp"
 
 using namespace sdsl;
 using namespace std;
@@ -123,7 +120,13 @@ double varianza(const vector<double> &v, double prom) {
 int main(int argc, char** argv) { 
   string filename = "test";
   string patron = "test";
+  vector<int> test;
 
+  parser(filename, 1, 1);
+
+  FMIndexWrapper FMIndex(filename);
+
+  FMIndex.doc_locate(patron, test);
   doc_locate(filename, patron);
   
   return 0;
