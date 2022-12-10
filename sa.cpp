@@ -52,7 +52,7 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
 
   int l = 0;
   int r = n-m-1;
-  int lb = get_bound(l,r,text,pat,sa,1)+1;
+  int lb = get_bound(l,r,text,pat,sa,1);
   int ub = get_bound(l,r,text,pat,sa,0);
 
   for(int i = lb;  i < ub; i++){
@@ -86,14 +86,14 @@ int_vector<> saCalculate(string filename, string patron) {
   return sa;
 }
 
-void doc_locate(string filename, string patron, vector<int> posList, int_vector<> sa){
+vector<int> doc_locate(string filename, string patron, vector<int> posList, int_vector<> sa){
   /*doc_locate obtiene el archivo del cual aparece una ocurrenica del patron*/
   //sa_locate 
   char* pat = (char*) patron.c_str();
   vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
-
+  vector<int> docIndex;
   if(!pos.size())
-    return ;
+    return docIndex;
 
   int ocurCount = 0;
   int lowRange = 0;
@@ -105,13 +105,18 @@ void doc_locate(string filename, string patron, vector<int> posList, int_vector<
       posCount++;
       ocurCount++;
     }
-      if(ocurCount != 0)cout<<":Ocurrencias de patron '"<<pat<<"' en documento "<<i+1<<" = "<<ocurCount<<endl;
+      if(ocurCount != 0) {
+        //cout<<":Ocurrencias de patron '"<<pat<<"' en documento "<<i+1<<" = "<<ocurCount<<endl;
+        docIndex.push_back(i+1);
+      }
       ocurCount = 0;
 
     lowRange = upRange;
     if(i != posList.size()-1)upRange = posList[i+1];
     else upRange += posList[i];
-  }  
+  }
+
+  return docIndex;  
 }
 
 double promedio(const vector<double> &v) {
@@ -149,15 +154,23 @@ int main(int argc, char** argv) {
   int_vector<> sa = saCalculate(filename, patron);
 
   cout << "FM" << endl;
-  vector<int> docIndex = FMIndex.doc_locate(patron, posList);
-  for (int i : docIndex) {
+  vector<int> docIndexFM = FMIndex.doc_locate(patron, posList);
+  for (int i : docIndexFM) {
     cout << i << " ";
   }
   cout << endl;
 
   cout << "SA" << endl;
-  doc_locate(filename, patron, posList, sa);
+  vector<int> docIndexSA = doc_locate(filename, patron, posList, sa);
+  for (int i : docIndexSA) {
+    cout << i << " ";
+  }
+
+  cout << endl;
+
   // Recordar limpiar seq, si se hacen 30 reps.
+  int_vector<> aux;
+  seq = aux;
 
   return 0;
 }
