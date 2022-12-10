@@ -8,6 +8,10 @@
 using namespace sdsl;
 using namespace std;
 
+// Esto es un hack terrible, pero necesitamos separar la construccion de la busqueda. 
+int_vector<> seq;
+
+
 int get_bound(int l, int r, char *text, char* pat, int_vector<> &sa, int mode){
   int n = strlen(text);
   int m = strlen(pat);
@@ -55,11 +59,11 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
   return pos;
 }
 
-void doc_locate(string filename, string patron){
+int_vector<> saCalculate(string filename, string patron) {
   // Leemos el archivo de entrada y guardamos el contenido en 'seq'
   string infile(filename);
   
-  int_vector<> seq;
+  //int_vector<> seq;
   int32_t n;
   {
     load_vector_from_file(seq, infile, 1);
@@ -75,11 +79,15 @@ void doc_locate(string filename, string patron){
   sa.resize(n);
   algorithm::calculate_sa((const unsigned char*)seq.data(), n, sa);
 
+  return sa;
+}
+
+void doc_locate(string filename, string patron, int_vector<> sa){
   char* pat = (char*) patron.c_str();
   
   vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
   vector<int> tam;
-  tam.push_back(n);
+  tam.push_back(seq.size());
 
   long int textCount = 0;
   long int sizeCount = 0;
@@ -120,14 +128,13 @@ double varianza(const vector<double> &v, double prom) {
 int main(int argc, char** argv) { 
   string filename = "test";
   string patron = "test";
-  vector<int> test;
-
-  parser(filename, 1, 1);
+  vector<int> posList = parser(filename, 1, 1);
 
   FMIndexWrapper FMIndex(filename);
+  int_vector<> sa = saCalculate(string filename, string patron)
 
-  FMIndex.doc_locate(patron, test);
-  doc_locate(filename, patron);
+  FMIndex.doc_locate(patron, posList);
+  doc_locate(filename, patron, sa);
   
   return 0;
 }
