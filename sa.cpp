@@ -83,8 +83,8 @@ int_vector<> saCalculate(string filename, string patron) {
 }
 
 void doc_locate(string filename, string patron, vector<int> posList, int_vector<> sa){
-  char* pat = (char*) patron.c_str();
-  
+  char* pat = (char* ) patron.c_str();
+
   vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
 
   cout << endl;
@@ -93,23 +93,19 @@ void doc_locate(string filename, string patron, vector<int> posList, int_vector<
   long int sizeCount = 0;
   int ocurCount = 0;
   for (int i = 0; i <= pos.size(); i++) {
-    if (pos[i] > posList[textCount - 1]) {
-      ocurCount = 1;
+    while(pos[i] > (textCount == 0 ? 0: posList[textCount-1])){
+      if (ocurCount != 0)  cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+      ocurCount = 0;
       textCount++;
-      i--;
-      continue;
-    } 
-    	if(i != pos.size() and pos[i] < posList[textCount] and pos[i] > posList[textCount-1])
-            ocurCount++;
-        else {
-            cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
-            cout<< "Doc " << ceil(pos[i]/100000) << endl;
-            ocurCount = 1;
-            sizeCount += posList[textCount]+1;
-            while(pos[i] < posList[textCount-1])
-              textCount++;
-        }
-    }       
+    }
+    if(i != pos.size() and pos[i] < posList[textCount] )
+        ocurCount++;
+    else {
+      cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
+      ocurCount = 0;
+      textCount++;
+    }
+  }
 }
 
 double promedio(const vector<double> &v) {
