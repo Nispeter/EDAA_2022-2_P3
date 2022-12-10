@@ -22,24 +22,23 @@ int get_bound(int l, int r, char *text, char* pat, int_vector<> &sa, int mode){
   int m = strlen(pat);
   long mid = (l+r)/2;
   //cerr<<"l:"<<l<<" mid:"<<mid<<" r:"<<r<<endl;
-  
-  if(l == r or mid == 0 or mid == n-1)
+  if(mid == n-m-1)
     return mid;
-  else if (l > r )
-    return mid - 1;
+  if (l >= mid or r <= mid )
+    return mid;
   //Modo 1 obtiene el limite inferior 
   if(mode){
     if(strncmp(pat, text+sa[mid] , m) <= 0)
-      return get_bound(l,mid-1,text,pat,sa,mode);
+      return get_bound(l,mid,text,pat,sa,mode);
     else
-      return get_bound(mid+1,r,text,pat,sa,mode);
+      return get_bound(mid,r,text,pat,sa,mode);
   }
   //Modo 0 obtiene el limite superior 
   else {
     if(strncmp(pat,text+sa[mid] , m) < 0)
-      return get_bound(l,mid-1,text,pat,sa,mode);
+      return get_bound(l,mid,text,pat,sa,mode);
     else
-      return get_bound(mid+1,r,text,pat,sa,mode);
+      return get_bound(mid,r,text,pat,sa,mode);
   }
   return -1;
 }
@@ -55,12 +54,16 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
   int r = n-m-1;
   int lb = get_bound(l,r,text,pat,sa,1)+1;
   int ub = get_bound(l,r,text,pat,sa,0);
-  //cerr<<"lb: "<<lb<<" ub:"<<ub<<endl;;
-  for(int i = lb;  i < ub; i++){
+  cerr<<"lb: "<<lb<<" ub:"<<ub<<endl;
+
+ cerr<<"salb:"; for (int i = 0; i < m; i++) cerr<<text[sa[lb]+i];
+ cerr<<",saub:";for (int i = 0; i < m; i++) cerr<<text[sa[ub]+i];cerr<<endl;
+
+  for(int i = lb;  i <= ub; i++){
     pos.push_back(sa[i]);
   }
   sort(pos.begin(),pos.end());
-  //cerr<<"size:"<<pos.size()<<endl;
+  cerr<<"size:"<<pos.size()<<endl;
   return pos;
 }
 
