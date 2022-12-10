@@ -82,23 +82,21 @@ int_vector<> saCalculate(string filename, string patron) {
   return sa;
 }
 
-void doc_locate(string filename, string patron, int_vector<> sa){
+void doc_locate(string filename, string patron, vector<int> posList, int_vector<> sa){
   char* pat = (char*) patron.c_str();
   
   vector<int> pos = sa_locate((char*)seq.data(), pat, sa);
-  vector<int> tam;
-  tam.push_back(seq.size());
 
   long int textCount = 0;
   long int sizeCount = 0;
   int ocurCount = 0;
   for (int i = 0; i <= pos.size(); i++) {
-    	if(i != pos.size() and pos[i] < sizeCount + tam[textCount] )
+    	if(i != pos.size() and pos[i] < sizeCount + posList[textCount] )
             ocurCount++;
         else {
             cout<<"Ocurrencias de patron '"<<pat<<"' en documento "<<textCount<<" = "<<ocurCount<<endl;
             ocurCount = 1;
-            sizeCount += tam[textCount]+1;
+            sizeCount += posList[textCount]+1;
             textCount++;
         }
     }       
@@ -134,7 +132,7 @@ int main(int argc, char** argv) {
   int_vector<> sa = saCalculate(filename, patron);
 
   FMIndex.doc_locate(patron, posList);
-  doc_locate(filename, patron, sa);
+  doc_locate(filename, patron, posList, sa);
   // Recordar limpiar seq, si se hacen 30 reps.
 
   return 0;
