@@ -21,7 +21,7 @@ int get_bound(int l, int r, char *text, char* pat, int_vector<> &sa, int mode){
   int n = strlen(text);
   int m = strlen(pat);
   long mid = (l+r)/2;
-  //cerr<<"l:"<<l<<" mid:"<<mid<<" r:"<<r<<endl;
+
   if(mid == n-m-1)
     return mid;
   if (l >= mid or r <= mid )
@@ -49,16 +49,17 @@ vector<int> sa_locate(char *text, char* pat, int_vector<> &sa){
   vector<int> pos;
   int n = strlen(text);
   int m = strlen(pat);
-
+  //Rangos del suffix array dados por ub y lb
   int l = 0;
   int r = n-m-1;
   int lb = get_bound(l,r,text,pat,sa,1)+1;
   int ub = get_bound(l,r,text,pat,sa,0);
-  cerr<<"lb: "<<lb<<" ub:"<<ub<<endl;
 
- cerr<<"salb:"; for (int i = 0; i < m; i++) cerr<<text[sa[lb]+i];
- cerr<<",saub:";for (int i = 0; i < m; i++) cerr<<text[sa[ub]+i];cerr<<endl;
-
+  //cerr<<"lb: "<<lb<<" ub:"<<ub<<endl;
+  //cerr<<"salb:"; for (int i = 0; i < m; i++) cerr<<text[sa[lb]+i];
+  //cerr<<",saub:";for (int i = 0; i < m; i++) cerr<<text[sa[ub]+i];cerr<<endl;
+  
+  //push de todos los hits encontrados por la busqueda binaria 
   for(int i = lb;  i <= ub; i++){
     pos.push_back(sa[i]);
   }
@@ -71,7 +72,6 @@ int_vector<> saCalculate(string filename, string patron) {
   // Leemos el archivo de entrada y guardamos el contenido en 'seq'
   string infile(filename);
   
-  //int_vector<> seq;
   int32_t n;
   {
     load_vector_from_file(seq, infile, 1);
@@ -104,14 +104,13 @@ vector<int> doc_locate(string filename, string patron, vector<int> posList, int_
   int lowRange = 0;
   int upRange = posList[0];
   int posCount = 0;
-  
+  /*DOCUMENTADO EN FM-INDEXWRAPPER.CPP*/
   for(int i = 0; i < posList.size(); i++){
     while(pos[posCount] > lowRange and pos[posCount] <= upRange){
       posCount++;
       ocurCount++;
     }
       if(ocurCount != 0) {
-        //cout<<":Ocurrencias de patron '"<<pat<<"' en documento "<<i+1<<" = "<<ocurCount<<endl;
         docIndex.push_back(i+1);
       }
       ocurCount = 0;
@@ -123,7 +122,7 @@ vector<int> doc_locate(string filename, string patron, vector<int> posList, int_
 
   return docIndex;  
 }
-
+//Promedio de tiempo experimental
 double promedio(const vector<double> &v) {
   double aux = 0;
 
@@ -133,7 +132,7 @@ double promedio(const vector<double> &v) {
 
   return (aux / (double) v.size()); 
 }
-
+//varianza de tiempo experimental 
 double varianza(const vector<double> &v, double prom) {
   double var = 0;
 
@@ -146,6 +145,15 @@ double varianza(const vector<double> &v, double prom) {
 
 
 int main(int argc, char** argv) { 
+  /*
+  parseo de argimentos:
+    Nombre del archivo de testeo
+    Tamaño del patron
+    Cantidad de documentos
+    Tamaño de documentos 
+    Documento de salida para logs
+    Iteraciones de prueba para obtener promedio 
+  */
   string original_filename(argv[1]);
   string patron_size(argv[2]);
   string nDoc(argv[3]);
@@ -183,13 +191,13 @@ int main(int argc, char** argv) {
   for (int i = 0; i < stoi(reps); ++i) {
     generate(vec.begin(), vec.end(), gen);
     w = (buffer.str()).substr(vec[0], stoi(patron_size));
-
+    //CONSTRUCTOR DE SUFFIX ARRAY
     start = chrono::high_resolution_clock::now();
     int_vector<> sa = saCalculate(filename, w);
     end = chrono::high_resolution_clock::now();
     diff = end - start;
     tConsSA.push_back(diff.count());
-
+    //DOC LOCATE DE FM INDEX 
     start = chrono::high_resolution_clock::now();
     docIndexSA = doc_locate(filename, w, posList, sa);
     end = chrono::high_resolution_clock::now();
@@ -197,13 +205,13 @@ int main(int argc, char** argv) {
     seq = aux;
     diff = end - start;
     tBusSA.push_back(diff.count());
-
+    //CONSTRUCTOR DE FM INDEX
     start = chrono::high_resolution_clock::now();
     FMIndexWrapper FMIndex(filename);
     end = chrono::high_resolution_clock::now();
     diff = end - start;
     tConsFM.push_back(diff.count());
-
+    //DOC LOCATE DE FM INDEX
     start = chrono::high_resolution_clock::now();
     docIndexFM = FMIndex.doc_locate(w, posList);
     end = chrono::high_resolution_clock::now();
